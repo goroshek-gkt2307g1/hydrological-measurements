@@ -1,0 +1,207 @@
+﻿<Window x:Class="Гидрологические_измерения.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Главная" Height="720" Width="1080"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded">
+
+	<Window.Resources>
+		<Style x:Key="ActiveButtonStyle" TargetType="Button">
+			<Setter Property="Background" Value="#2C7DA0"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+		</Style>
+		<Style x:Key="InactiveButtonStyle" TargetType="Button">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Foreground" Value="Black"/>
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="#FFE5F3FF"/>
+					<Setter Property="Foreground" Value="Black"/>
+				</Trigger>
+				<Trigger Property="IsPressed" Value="True">
+					<Setter Property="Foreground" Value="#4A7B9C"/>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+	</Window.Resources>
+
+	<Grid Margin="5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="50"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="2*"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="280"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="180"/>
+		</Grid.ColumnDefinitions>
+
+		<!--верхняя панель-->
+		<Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" 
+                Background="#F0F8FF" BorderBrush="#B0D4F1" BorderThickness="0,0,0,1">
+			<WrapPanel VerticalAlignment="Center" Margin="5,0,0,0">
+				<Button x:Name="BtnMain" Content="Главная" Height="30" Margin="3,0" Width="120"
+                        FontSize="14" Style="{StaticResource ActiveButtonStyle}"/>
+				<Button x:Name="BtnProjects" Content="Проекты" Height="30" Margin="3,0" Width="120"
+                        FontSize="14" Style="{StaticResource InactiveButtonStyle}"
+                        Click="Button_Projects_Click"/>
+				<Button x:Name="BtnHydroposts" Content="Гидропосты" Height="30" Margin="3,0" Width="120"
+                        FontSize="14" Style="{StaticResource InactiveButtonStyle}"
+                        Click="Button_HydroPosts_Click"/>
+				<Button x:Name="BtnEquipment" Content="Оборудование" Height="30" Margin="3,0" Width="120"
+                        FontSize="14" Style="{StaticResource InactiveButtonStyle}"
+                        Click="Button_Equipment_Click"/>
+				<Button x:Name="BtnDirectories" Content="Справочники" Height="30" Margin="3,0" Width="120"
+                        FontSize="14" Style="{StaticResource InactiveButtonStyle}"
+                        Click="Button_Directories_Click" 
+                        Visibility="Collapsed"/>
+				<Button x:Name="BtnAdmin" Content="Администрирование" Height="30" Margin="3,0" Width="140"
+                        FontSize="14" Style="{StaticResource InactiveButtonStyle}"
+                        Click="Button_Admin_Click"
+                        Visibility="Collapsed"/>
+			</WrapPanel>
+		</Border>
+
+		<!--фильтры-->
+		<Border Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" 
+                Background="AliceBlue" Margin="0,3,3,0" CornerRadius="3">
+			<ScrollViewer VerticalScrollBarVisibility="Auto">
+				<StackPanel Margin="8">
+					<TextBlock Text="Фильтры" FontSize="16" FontWeight="Bold" Margin="0,0,0,8"/>
+
+					<TextBlock Text="Проект" FontSize="13"/>
+					<ComboBox x:Name="ProjectFilterComboBox" Height="32" Background="White"
+                              SelectionChanged="ProjectFilterComboBox_SelectionChanged"/>
+
+					<TextBlock Text="Гидропост" FontSize="13" Margin="0,5,0,0"/>
+					<ComboBox x:Name="HydropostFilterComboBox" Height="32" Background="White"
+                              SelectionChanged="HydropostFilterComboBox_SelectionChanged"/>
+
+					<TextBlock Text="Участок съемки" FontSize="13" Margin="0,5,0,0"/>
+					<ComboBox x:Name="SurveyLineFilterComboBox" Height="32" Background="White"
+                              SelectionChanged="SurveyLineFilterComboBox_SelectionChanged"/>
+
+					<TextBlock Text="Дата" FontSize="13" Margin="0,5,0,0"/>
+					<DatePicker x:Name="DateFilterPicker" Height="32" FontSize="12"
+                                SelectedDateChanged="DateFilterPicker_SelectedDateChanged"/>
+
+					<Button Content="Сбросить" Height="28" Margin="0,10,0,0"
+                            Background="#FFE5F3FF" Click="Button_ResetFilters_Click" FontSize="12"/>
+				</StackPanel>
+			</ScrollViewer>
+		</Border>
+
+		<!--картографический вид-->
+		<Border Grid.Row="1" Grid.Column="1" Margin="3,3,3,0" 
+                BorderBrush="Gray" BorderThickness="1" Background="White">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<TextBlock Text="Картографический вид" FontSize="13" FontWeight="Bold" 
+                           Margin="5,3,0,0" Foreground="#2C7DA0"/>
+				<Canvas x:Name="MapCanvas" Background="White" Grid.Row="1"
+                        MouseMove="MapCanvas_MouseMove"/>
+			</Grid>
+		</Border>
+
+		<!--графики-->
+		<Border Grid.Row="1" Grid.Column="2" Margin="3,3,3,0"
+                BorderBrush="Gray" BorderThickness="1" Background="White">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<StackPanel Orientation="Horizontal" Margin="5,3,0,0">
+					<TextBlock Text="График:" FontSize="13" FontWeight="Bold" 
+                               VerticalAlignment="Center" Foreground="#2C7DA0" Margin="0,0,8,0"/>
+					<Button Content="Гидрограф" FontSize="11" Margin="2,0"
+                            Style="{StaticResource ActiveButtonStyle}" Padding="6,2"
+                            Click="GraphType_Click"/>
+					<Button Content="Уровень-расход" FontSize="11" Margin="2,0"
+                            Style="{StaticResource InactiveButtonStyle}" Padding="6,2"
+                            Click="GraphType_Click"/>
+					<Button Content="Продольный профиль" FontSize="11" Margin="2,0"
+                            Style="{StaticResource InactiveButtonStyle}" Padding="6,2"
+                            Click="GraphType_Click"/>
+				</StackPanel>
+				<Canvas x:Name="GraphCanvas" Background="White" Grid.Row="1"
+                        MouseMove="GraphCanvas_MouseMove"/>
+			</Grid>
+		</Border>
+
+		<!--координаты-->
+		<Border Grid.Row="1" Grid.Column="3" Margin="3,3,3,0"
+                BorderBrush="Gray" BorderThickness="1" Background="White">
+			<StackPanel Margin="8">
+				<TextBlock Text="Координаты" FontSize="13" FontWeight="Bold" Foreground="#2C7DA0"/>
+				<TextBlock Text="X:" FontSize="12" Margin="0,8,0,0"/>
+				<TextBox x:Name="CoordXTextBox" Height="26" IsReadOnly="True" 
+                         Background="#F5F5F5" FontSize="11" Margin="0,2,0,5"/>
+				<TextBlock Text="Y:" FontSize="12"/>
+				<TextBox x:Name="CoordYTextBox" Height="26" IsReadOnly="True" 
+                         Background="#F5F5F5" FontSize="11" Margin="0,2,0,0"/>
+				<TextBlock Text="Наведите курсор на карту или график" FontSize="9" 
+                           Foreground="Gray" Margin="0,10,0,0" TextWrapping="Wrap"/>
+			</StackPanel>
+		</Border>
+
+		<!--кнопки-->
+		<Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="3,0,0,0">
+			<WrapPanel VerticalAlignment="Center">
+				<Button Content="+ Добавить измерение" Height="26" Width="150"
+                        Margin="0,0,10,0" Background="#2C7DA0" Foreground="White" FontSize="12"
+                        Click="BtnAddMeasurement_Click"/>
+				<Button x:Name="Button_AddSyntheticData" Content="+ Синтетические данные" Height="26" Width="170"
+                        Margin="0,0,10,0" Background="#27AE60" Foreground="White" FontSize="12"
+                        Click="Button_AddSyntheticData_Click"/>
+				<Button x:Name="Button_ClearDatabase" Content="Очистить БД" Height="26" Width="110"
+                        Background="#E74C3C" Foreground="White" FontSize="12"
+                        Click="Button_ClearDatabase_Click"/>
+			</WrapPanel>
+		</Border>
+
+		<!--таблица измерений-->
+		<Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" 
+                Margin="3,3,3,3" BorderBrush="Gray" BorderThickness="1" Background="White">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<TextBlock Text="Таблица измерений" FontSize="13" FontWeight="Bold" 
+                           Margin="5,3,0,0" Foreground="#2C7DA0"/>
+				<DataGrid x:Name="MeasurementsDataGrid" Grid.Row="1"
+                          AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                          VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto"
+                          FontSize="11" RowHeight="22">
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="Дата" Binding="{Binding MeasuredAt, StringFormat=dd.MM.yyyy}" Width="80"/>
+						<DataGridTextColumn Header="Время" Binding="{Binding MeasuredAt, StringFormat=HH:mm}" Width="55"/>
+						<DataGridTextColumn Header="Проект" Binding="{Binding ProjectIdFkNavigation.Name}" Width="100"/>
+						<DataGridTextColumn Header="Участок" Binding="{Binding SurveyLineIdFkNavigation.Name}" Width="90"/>
+						<DataGridTextColumn Header="Оборудование" Binding="{Binding EquipmentIdFkNavigation.Name}" Width="100"/>
+						<DataGridTextColumn Header="Уровень, м" Binding="{Binding WaterLevel}" Width="75"/>
+						<DataGridTextColumn Header="Расход" Binding="{Binding WaterConsumption}" Width="75"/>
+						<DataGridTextColumn Header="Темп,°C" Binding="{Binding WaterTemperature}" Width="65"/>
+						<DataGridTextColumn Header="Прозр,м" Binding="{Binding WaterTransparency}" Width="65"/>
+						<DataGridTextColumn Header="Лед" Binding="{Binding IcePhenomena}" Width="70"/>
+						<DataGridTextColumn Header="Гидролог" Binding="{Binding PersonIdFkNavigation.LastName}" Width="90"/>
+						<DataGridTextColumn Header="Комментарий" Binding="{Binding Comment}" Width="*"/>
+					</DataGrid.Columns>
+				</DataGrid>
+			</Grid>
+		</Border>
+	</Grid>
+</Window>
